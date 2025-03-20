@@ -1,0 +1,6 @@
+@back_lns_libros_HostAddress = http://localhost:5158
+
+GET {{back_lns_libros_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

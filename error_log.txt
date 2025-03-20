@@ -1,0 +1,12 @@
+lunes, 17 de marzo de 2025 - - - - - - - 42601: syntax error at or near "codigoestudiante"
+
+POSITION: 240
+lunes, 17 de marzo de 2025 - - - - - - - 42601: trailing junk after numeric literal at or near "04354c31"
+
+POSITION: 617
+lunes, 17 de marzo de 2025 - - - - - - - 42883: operator does not exist: character varying = integer
+
+POSITION: 449
+lunes, 17 de marzo de 2025 - - - - - - - 42883: operator does not exist: character varying = integer
+
+POSITION: 449
