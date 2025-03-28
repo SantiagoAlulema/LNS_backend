@@ -2,6 +2,7 @@
 using back_lns_libros.Helpers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Npgsql;
 using System.Data;
 
 namespace back_lns_libros.Controllers
@@ -18,55 +19,50 @@ namespace back_lns_libros.Controllers
         }
 
         [HttpGet("consultar-libro")]
-        public IActionResult VerificarLibro(string sku = "", string serie = "")
+        public IActionResult VerificarLibro(string serie = "")
         {
             PgConn conn = new PgConn();
             conn.cadenaConnect = Configuration["Conn_LNS"];
             string JSONString = String.Empty;
-
 
             string cadena = $@"SELECT p.id codigoproducto, 
                                        p.sku, 
                                        p.serie, 
                                        p.titulo, 
                                        p.periodo,
-                                       COALESCE(es.id ,'') codigoestudiante, 
+                                       COALESCE(es.id, '') AS codigoestudiante, 
                                        es.nombre
-                                FROM sysplus.product p
-                                LEFT JOIN sysplus.estudiantelibro el ON el.codigoproduct = p.id
-                                LEFT JOIN sysplus.estudent es ON es.id = el.codigoestudent
-                               where sku = '{sku}' and serie = '{serie}' and
-                               EXTRACT(YEAR FROM CURRENT_DATE) BETWEEN SPLIT_PART(p.periodo, '-', 1)::INTEGER 
-                                        AND SPLIT_PART(p.periodo, '-', 2)::INTEGER;;";
+                                FROM librolns.product p
+                                LEFT JOIN librolns.estudiantelibro el ON el.codigoproduct = p.id
+                                LEFT JOIN librolns.estudent es ON es.id = el.codigoestudent
+                               where UPPER(p.serie) LIKE UPPER('%{serie}%') and p.estado = 'A' 
+                               AND NOT EXISTS (SELECT 1 FROM librolns.estudiantelibro esl WHERE esl.codigoproduct = p.id )
+                               limit 20;";
             DataTable dataTable = conn.ejecutarconsulta_dt(cadena);
             RespuestaSW res = new();
-            if (dataTable.Rows.Count == 0)
+            if (dataTable.Rows.Count > 0 )
             {
-                res.estado = 404;
-                res.mensaje = "NO SE ENCONTRARON RESULTADOS";
-                return Ok(res);
-            }
-
-            if (dataTable.Rows[0]["codigoestudiante"] == "")
-            {
-                var dataList = dataTable.AsEnumerable().Select(row => new
+                if (dataTable.Rows[0]["codigoestudiante"] == "")
                 {
-                    codigoproducto = row["codigoproducto"].ToString(),
-                    sku = row["sku"].ToString(),
-                    serie = row["serie"].ToString(),
-                    titulo = row["titulo"].ToString(),
-                    periodo = row["periodo"].ToString(),
-                    codigoestudiante = row["codigoestudiante"].ToString(),
-                    nombre = row["nombre"].ToString()
-                }).ToList();
+                    var dataList = dataTable.AsEnumerable().Select(row => new
+                    {
+                        codigoproducto = row["codigoproducto"].ToString(),
+                        sku = row["sku"].ToString(),
+                        serie = row["serie"].ToString(),
+                        titulo = row["titulo"].ToString(),
+                        periodo = row["periodo"].ToString(),
+                        codigoestudiante = row["codigoestudiante"].ToString(),
+                        nombre = row["nombre"].ToString()
+                    }).ToList();
 
-                res.estado = 404;
-                res.mensaje = "EL LIBRO SE ENCUENTRA DISPONIBLE PARA SU REGISTRO";
-                res.data = dataList;
-                JSONString = Newtonsoft.Json.JsonConvert.SerializeObject(res);
-                return Ok(res);
+                    res.estado = 200;
+                    res.mensaje = "EL LIBRO SE ENCUENTRA DISPONIBLE PARA SU REGISTRO";
+                    res.data = dataList;
+                    JSONString = Newtonsoft.Json.JsonConvert.SerializeObject(res);
+                    return Ok(res);
+                }
             }
-
+        
             res.estado = 200;
             res.mensaje = "LIBRO NO ESTA DISPONIBLE";
             JSONString = Newtonsoft.Json.JsonConvert.SerializeObject(res);
@@ -77,12 +73,13 @@ namespace back_lns_libros.Controllers
         {
             string cadena = $@"SELECT es.id, 
                                       es.nombre, 
-                                      el.descripcion periodo , 
-                                      i.descripcion ciclo
-                               FROM sysplus.estudent es
-                               left join sysplus.education_level el on el.id = es.periodo 
-                               left join sysplus.institution i on i.id = es.ciclo 
-                               WHERE id='{cedula}';";
+                                      esli.codigoinstitucion  periodo , 
+                                      esli.nivelacademico  ciclo
+                               FROM librolns.estudent es
+                               left join librolns.estudiantelibro esli on esli.codigoestudent =  es.id 
+                               left join librolns.education_level el on el.id = esli.nivelacademico
+                               left join librolns.institution i on i.id = esli.codigoinstitucion 
+                               WHERE es.id='{cedula}';";
 
             PgConn conn = new PgConn();
             conn.cadenaConnect = Configuration["Conn_LNS"];
@@ -130,7 +127,7 @@ namespace back_lns_libros.Controllers
         {
             PgConn conn = new PgConn();
             conn.cadenaConnect = Configuration["Conn_LNS"];
-            string cadena = $@"SELECT id, descripcion FROM sysplus.institution;";
+            string cadena = $@"SELECT id, descripcion FROM librolns.institution;";
             DataTable dataTable = conn.ejecutarconsulta_dt(cadena);
 
             var lista = new List<Dictionary<string, object>>();
@@ -154,12 +151,94 @@ namespace back_lns_libros.Controllers
             return Ok(res);
         }
 
+        [HttpPost("upload-book-news")]
+        public IActionResult ExecuteBulkInsert(List<BookData> books)
+        {
+            try
+            {
+                String cadena = "UPDATE librolns.product SET estado = 'I'";
+                ejecutarconsulta(cadena);
+                cadena = "INSERT INTO librolns.product VALUES ";
+                cadena += string.Join(", ", books.Select(book =>
+                                     $"('{Guid.NewGuid().ToString()}', '{book.sku}', '{book.serie}', '{book.titulo}', '{book.periodo}', 'A')"));
+                ejecutarconsulta(cadena);
+                return Ok("SE INSERTO CORRECTAMENTE");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"ERROR: {ex.Message}");
+            }
+        }
+
+        [HttpGet("reporte-libros-registrados")]
+        public IActionResult ReporteComercial([FromQuery] string institucion = "", string nivelacademico = "")
+        {
+            string query = !string.IsNullOrEmpty(institucion)
+                            ? $"where rp.id_institucion = '{institucion}'"
+                            : "";
+            query += !string.IsNullOrEmpty(nivelacademico)
+                            ? $" {(string.IsNullOrEmpty(institucion) ? "where " : "OR")} rp.id_academico = '{nivelacademico}'"
+                            : "";
+            PgConn conn = new PgConn();
+            conn.cadenaConnect = Configuration["Conn_LNS"];
+            string consulta = $@"select * FROM librolns.v_rpt_comercial rp   {query} ;";
+            DataTable dataTable = conn.ejecutarconsulta_dt(consulta, 800);
+            string JSONString = Newtonsoft.Json.JsonConvert.SerializeObject(dataTable);
+            return Ok(JSONString);
+        }
+
+        [HttpPost("save-estudiante-libro")]
+        public IActionResult GrabarLibroEstudiante([FromBody] StudentBookSave nuevolibroestudiante)
+        {
+            try
+            {
+                string cadena = string.Empty;
+                string codigoUnidadEducativa = nuevolibroestudiante.noexisteunidadeducativa ? Guid.NewGuid().ToString() : nuevolibroestudiante.unidadeducativa;
+                if (nuevolibroestudiante.noexisteunidadeducativa)
+                {
+                    cadena = $@"INSERT INTO librolns.institution
+                                VALUES('{codigoUnidadEducativa}', '{nuevolibroestudiante.unidadeducativa}');";
+                    ejecutarconsulta(cadena);
+                }
+
+                cadena = $@"INSERT INTO librolns.estudent
+                            SELECT '{nuevolibroestudiante.codigoestudiante}', '{nuevolibroestudiante.nombreestudiante}', 'nuevo', 'nuevo'
+                            WHERE NOT EXISTS (
+                            SELECT 1 FROM librolns.estudent WHERE id = '{nuevolibroestudiante.codigoestudiante}');";
+                ejecutarconsulta(cadena);
+
+                cadena = $@"INSERT INTO librolns.estudiantelibro
+                                   VALUES('{Guid.NewGuid().ToString()}', 
+                                          '{nuevolibroestudiante.codigoestudiante}', 
+                                          '{nuevolibroestudiante.codigolibro}', 
+                                           NOW(), 
+                                          'A', 
+                                          '{nuevolibroestudiante.periodo}',
+                                          '{codigoUnidadEducativa}',
+                                           '{nuevolibroestudiante.ciclo}',
+                                          '{nuevolibroestudiante.serie}');";
+                ejecutarconsulta(cadena);
+                return Ok("SE INSERTO EL LIBRO CORRECTAMENTE");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"SE PRESENTO EL SIGUIENTE ERROR: {ex.Message}");
+            }
+        }
+
+        private void ejecutarconsulta (string cadena)
+        {
+            PgConn conn = new PgConn();
+            conn.cadenaConnect = Configuration["Conn_LNS"];
+            conn.ejecutarconsulta_dt(cadena);
+        }
+
         [HttpGet("lista-nivel-lectivo")]
         public IActionResult ListaNivelLectivo()
         {
             PgConn conn = new PgConn();
             conn.cadenaConnect = Configuration["Conn_LNS"];
-            string cadena = $@"SELECT id, descripcion FROM sysplus.education_level;";
+            string cadena = $@"SELECT id, descripcion FROM librolns.education_level;";
             DataTable dataTable = conn.ejecutarconsulta_dt(cadena);
 
             var lista = new List<Dictionary<string, object>>();

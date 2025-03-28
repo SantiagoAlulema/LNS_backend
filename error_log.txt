@@ -10,3 +10,216 @@ POSITION: 449
 lunes, 17 de marzo de 2025 - - - - - - - 42883: operator does not exist: character varying = integer
 
 POSITION: 449
+sábado, 22 de marzo de 2025 - - - - - - - Failed to connect to 10.10.10.20:5432
+sábado, 22 de marzo de 2025 - - - - - - - Connection is not open
+sábado, 22 de marzo de 2025 - - - - - - - Failed to connect to 10.10.10.20:5432
+sábado, 22 de marzo de 2025 - - - - - - - Failed to connect to 10.10.10.20:5432
+sábado, 22 de marzo de 2025 - - - - - - - Connection is not open
+sábado, 22 de marzo de 2025 - - - - - - - Connection is not open
+sábado, 22 de marzo de 2025 - - - - - - - Failed to connect to 10.10.10.20:5432
+sábado, 22 de marzo de 2025 - - - - - - - Failed to connect to 10.10.10.20:5432
+sábado, 22 de marzo de 2025 - - - - - - - Connection is not open
+sábado, 22 de marzo de 2025 - - - - - - - Connection is not open
+sábado, 22 de marzo de 2025 - - - - - - - Failed to connect to 10.10.10.20:5432
+sábado, 22 de marzo de 2025 - - - - - - - Failed to connect to 10.10.10.20:5432
+sábado, 22 de marzo de 2025 - - - - - - - Connection is not open
+sábado, 22 de marzo de 2025 - - - - - - - Connection is not open
+sábado, 22 de marzo de 2025 - - - - - - - Failed to connect to 10.10.10.20:5432
+sábado, 22 de marzo de 2025 - - - - - - - Failed to connect to 10.10.10.20:5432
+sábado, 22 de marzo de 2025 - - - - - - - Connection is not open
+sábado, 22 de marzo de 2025 - - - - - - - Connection is not open
+sábado, 22 de marzo de 2025 - - - - - - - 42702: column reference "id" is ambiguous
+
+POSITION: 462
+sábado, 22 de marzo de 2025 - - - - - - - 42702: column reference "id" is ambiguous
+
+POSITION: 462
+sábado, 22 de marzo de 2025 - - - - - - - 42702: column reference "id" is ambiguous
+
+POSITION: 462
+sábado, 22 de marzo de 2025 - - - - - - - 42702: column reference "id" is ambiguous
+
+POSITION: 462
+domingo, 23 de marzo de 2025 - - - - - - - Failed to connect to 10.10.10.20:5432
+domingo, 23 de marzo de 2025 - - - - - - - Connection is not open
+domingo, 23 de marzo de 2025 - - - - - - - Failed to connect to 10.10.10.20:5432
+domingo, 23 de marzo de 2025 - - - - - - - Connection is not open
+domingo, 23 de marzo de 2025 - - - - - - - Failed to connect to 10.10.10.20:5432
+domingo, 23 de marzo de 2025 - - - - - - - Connection is not open
+domingo, 23 de marzo de 2025 - - - - - - - Failed to connect to 10.10.10.20:5432
+domingo, 23 de marzo de 2025 - - - - - - - Connection is not open
+domingo, 23 de marzo de 2025 - - - - - - - Failed to connect to 10.10.10.20:5432
+domingo, 23 de marzo de 2025 - - - - - - - Failed to connect to 10.10.10.20:5432
+domingo, 23 de marzo de 2025 - - - - - - - Connection is not open
+domingo, 23 de marzo de 2025 - - - - - - - Connection is not open
+domingo, 23 de marzo de 2025 - - - - - - - Failed to connect to 10.10.10.20:5432
+domingo, 23 de marzo de 2025 - - - - - - - Failed to connect to 10.10.10.20:5432
+domingo, 23 de marzo de 2025 - - - - - - - Connection is not open
+domingo, 23 de marzo de 2025 - - - - - - - Connection is not open
+domingo, 23 de marzo de 2025 - - - - - - - Failed to connect to 10.10.10.20:5432
+domingo, 23 de marzo de 2025 - - - - - - - Connection is not open
+domingo, 23 de marzo de 2025 - - - - - - - Failed to connect to 10.10.10.20:5432
+domingo, 23 de marzo de 2025 - - - - - - - Connection is not open
+domingo, 23 de marzo de 2025 - - - - - - - Failed to connect to 10.10.10.20:5432
+domingo, 23 de marzo de 2025 - - - - - - - Connection is not open
+domingo, 23 de marzo de 2025 - - - - - - - 42702: column reference "id" is ambiguous
+
+POSITION: 462
+domingo, 23 de marzo de 2025 - - - - - - - 42702: column reference "id" is ambiguous
+
+POSITION: 462
+domingo, 23 de marzo de 2025 - - - - - - - 42702: column reference "id" is ambiguous
+
+POSITION: 462
+domingo, 23 de marzo de 2025 - - - - - - - 42702: column reference "id" is ambiguous
+
+POSITION: 462
+domingo, 23 de marzo de 2025 - - - - - - - 42P01: relation "librolns.estudiantelibro" does not exist
+
+POSITION: 459
+domingo, 23 de marzo de 2025 - - - - - - - 42P01: relation "librolns.estudiantelibro" does not exist
+
+POSITION: 459
+domingo, 23 de marzo de 2025 - - - - - - - 42P01: relation "librolns.estudiantelibro" does not exist
+
+POSITION: 459
+domingo, 23 de marzo de 2025 - - - - - - - 42P01: relation "librolns.estudiantelibro" does not exist
+
+POSITION: 459
+domingo, 23 de marzo de 2025 - - - - - - - 42P01: relation "librolns.estudiantelibro" does not exist
+
+POSITION: 459
+domingo, 23 de marzo de 2025 - - - - - - - 42P01: relation "librolns.estudiantelibro" does not exist
+
+POSITION: 459
+domingo, 23 de marzo de 2025 - - - - - - - 42P01: relation "librolns.estudiantelibro" does not exist
+
+POSITION: 459
+domingo, 23 de marzo de 2025 - - - - - - - 42P01: relation "librolns.estudiantelibro" does not exist
+
+POSITION: 459
+domingo, 23 de marzo de 2025 - - - - - - - 42P01: relation "librolns.estudiantelibro" does not exist
+
+POSITION: 459
+domingo, 23 de marzo de 2025 - - - - - - - 42P01: relation "librolns.estudiantelibro" does not exist
+
+POSITION: 459
+domingo, 23 de marzo de 2025 - - - - - - - 42702: column reference "estado" is ambiguous
+
+POSITION: 670
+domingo, 23 de marzo de 2025 - - - - - - - 42702: column reference "estado" is ambiguous
+
+POSITION: 672
+domingo, 23 de marzo de 2025 - - - - - - - 42702: column reference "estado" is ambiguous
+
+POSITION: 671
+domingo, 23 de marzo de 2025 - - - - - - - 42702: column reference "estado" is ambiguous
+
+POSITION: 670
+domingo, 23 de marzo de 2025 - - - - - - - 42702: column reference "estado" is ambiguous
+
+POSITION: 669
+domingo, 23 de marzo de 2025 - - - - - - - 42702: column reference "estado" is ambiguous
+
+POSITION: 666
+domingo, 23 de marzo de 2025 - - - - - - - 42702: column reference "estado" is ambiguous
+
+POSITION: 667
+domingo, 23 de marzo de 2025 - - - - - - - 42702: column reference "estado" is ambiguous
+
+POSITION: 668
+domingo, 23 de marzo de 2025 - - - - - - - Failed to connect to 10.10.10.20:5432
+domingo, 23 de marzo de 2025 - - - - - - - Connection is not open
+domingo, 23 de marzo de 2025 - - - - - - - Failed to connect to 10.10.10.20:5432
+domingo, 23 de marzo de 2025 - - - - - - - Connection is not open
+domingo, 23 de marzo de 2025 - - - - - - - Failed to connect to 10.10.10.20:5432
+domingo, 23 de marzo de 2025 - - - - - - - Connection is not open
+domingo, 23 de marzo de 2025 - - - - - - - Failed to connect to 10.10.10.20:5432
+domingo, 23 de marzo de 2025 - - - - - - - Connection is not open
+domingo, 23 de marzo de 2025 - - - - - - - 42601: syntax error at or near "select"
+
+POSITION: 738
+domingo, 23 de marzo de 2025 - - - - - - - 42601: syntax error at or near "select"
+
+POSITION: 738
+domingo, 23 de marzo de 2025 - - - - - - - 42601: syntax error at or near "select"
+
+POSITION: 737
+lunes, 24 de marzo de 2025 - - - - - - - 42601: INSERT has more expressions than target columns
+
+POSITION: 552
+lunes, 24 de marzo de 2025 - - - - - - - 42601: INSERT has more expressions than target columns
+
+POSITION: 552
+lunes, 24 de marzo de 2025 - - - - - - - Failed to connect to 10.10.10.20:5432
+lunes, 24 de marzo de 2025 - - - - - - - Connection is not open
+martes, 25 de marzo de 2025 - - - - - - - Failed to connect to 10.10.10.20:5432
+martes, 25 de marzo de 2025 - - - - - - - Failed to connect to 10.10.10.20:5432
+martes, 25 de marzo de 2025 - - - - - - - Connection is not open
+martes, 25 de marzo de 2025 - - - - - - - Connection is not open
+martes, 25 de marzo de 2025 - - - - - - - Failed to connect to 10.10.10.20:5432
+martes, 25 de marzo de 2025 - - - - - - - Failed to connect to 10.10.10.20:5432
+martes, 25 de marzo de 2025 - - - - - - - Connection is not open
+martes, 25 de marzo de 2025 - - - - - - - Connection is not open
+martes, 25 de marzo de 2025 - - - - - - - Failed to connect to 10.10.10.20:5432
+martes, 25 de marzo de 2025 - - - - - - - Connection is not open
+martes, 25 de marzo de 2025 - - - - - - - Failed to connect to 10.10.10.20:5432
+martes, 25 de marzo de 2025 - - - - - - - Connection is not open
+martes, 25 de marzo de 2025 - - - - - - - Failed to connect to 10.10.10.20:5432
+martes, 25 de marzo de 2025 - - - - - - - Connection is not open
+martes, 25 de marzo de 2025 - - - - - - - Failed to connect to 10.10.10.20:5432
+martes, 25 de marzo de 2025 - - - - - - - Connection is not open
+martes, 25 de marzo de 2025 - - - - - - - Exception while reading from stream
+martes, 25 de marzo de 2025 - - - - - - - Failed to connect to 10.10.10.20:5432
+martes, 25 de marzo de 2025 - - - - - - - Connection is not open
+martes, 25 de marzo de 2025 - - - - - - - Failed to connect to 10.10.10.20:5432
+martes, 25 de marzo de 2025 - - - - - - - Connection is not open
+martes, 25 de marzo de 2025 - - - - - - - Failed to connect to 10.10.10.20:5432
+martes, 25 de marzo de 2025 - - - - - - - Connection is not open
+martes, 25 de marzo de 2025 - - - - - - - Failed to connect to 10.10.10.20:5432
+martes, 25 de marzo de 2025 - - - - - - - Connection is not open
+martes, 25 de marzo de 2025 - - - - - - - Exception while reading from stream
+martes, 25 de marzo de 2025 - - - - - - - Connection is not open
+martes, 25 de marzo de 2025 - - - - - - - Exception while reading from stream
+martes, 25 de marzo de 2025 - - - - - - - Connection is not open
+martes, 25 de marzo de 2025 - - - - - - - Exception while reading from stream
+martes, 25 de marzo de 2025 - - - - - - - Connection is not open
+martes, 25 de marzo de 2025 - - - - - - - The operation has timed out.
+martes, 25 de marzo de 2025 - - - - - - - The operation has timed out.
+martes, 25 de marzo de 2025 - - - - - - - The operation has timed out.
+martes, 25 de marzo de 2025 - - - - - - - The operation has timed out.
+martes, 25 de marzo de 2025 - - - - - - - Connection is not open
+martes, 25 de marzo de 2025 - - - - - - - Connection is not open
+martes, 25 de marzo de 2025 - - - - - - - Connection is not open
+martes, 25 de marzo de 2025 - - - - - - - Connection is not open
+martes, 25 de marzo de 2025 - - - - - - - Exception while reading from stream
+martes, 25 de marzo de 2025 - - - - - - - Connection is not open
+martes, 25 de marzo de 2025 - - - - - - - Exception while reading from stream
+martes, 25 de marzo de 2025 - - - - - - - Connection is not open
+martes, 25 de marzo de 2025 - - - - - - - Exception while reading from stream
+martes, 25 de marzo de 2025 - - - - - - - Exception while writing to stream
+martes, 25 de marzo de 2025 - - - - - - - Connection is not open
+martes, 25 de marzo de 2025 - - - - - - - Connection is not open
+jueves, 27 de marzo de 2025 - - - - - - - Exception while writing to stream
+jueves, 27 de marzo de 2025 - - - - - - - The ConnectionString property has not been initialized.
+jueves, 27 de marzo de 2025 - - - - - - - Connection is not open
+jueves, 27 de marzo de 2025 - - - - - - - The ConnectionString property has not been initialized.
+jueves, 27 de marzo de 2025 - - - - - - - Connection is not open
+jueves, 27 de marzo de 2025 - - - - - - - The ConnectionString property has not been initialized.
+jueves, 27 de marzo de 2025 - - - - - - - Connection is not open
+jueves, 27 de marzo de 2025 - - - - - - - The ConnectionString property has not been initialized.
+jueves, 27 de marzo de 2025 - - - - - - - Connection is not open
+jueves, 27 de marzo de 2025 - - - - - - - The ConnectionString property has not been initialized.
+jueves, 27 de marzo de 2025 - - - - - - - Connection is not open
+jueves, 27 de marzo de 2025 - - - - - - - 42601: syntax error at or near "("
+
+POSITION: 54
+viernes, 28 de marzo de 2025 - - - - - - - 42601: syntax error at or near "("
+
+POSITION: 54
+viernes, 28 de marzo de 2025 - - - - - - - 42601: syntax error at or near ")"
+
+POSITION: 79
+viernes, 28 de marzo de 2025 - - - - - - - 42601: syntax error at or near "("
+
+POSITION: 54
