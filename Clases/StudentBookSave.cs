@@ -11,6 +11,9 @@
         public string nombreestudiante { get; set; }
         public string serie { get; set; }
         public bool noexisteunidadeducativa { get; set; } = false;
+        public string latitud { get; set; }
+        public string longitud { get; set; }
+
 
 
     }

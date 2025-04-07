@@ -68,6 +68,8 @@ namespace back_lns_libros.Controllers
             JSONString = Newtonsoft.Json.JsonConvert.SerializeObject(res);
             return Ok(res);
         }
+
+
         [HttpGet("buscar-estudiante")]
         public IActionResult BuscarEstudiante([FromQuery] string cedula)
         {
@@ -156,9 +158,9 @@ namespace back_lns_libros.Controllers
         {
             try
             {
-                String cadena = "UPDATE librolns.product SET estado = 'I'";
-                ejecutarconsulta(cadena);
-                cadena = "INSERT INTO librolns.product VALUES ";
+                //String cadena = "UPDATE librolns.product SET estado = 'I'";
+                //ejecutarconsulta(cadena);
+                String cadena = "INSERT INTO librolns.product VALUES ";
                 cadena += string.Join(", ", books.Select(book =>
                                      $"('{Guid.NewGuid().ToString()}', '{book.sku}', '{book.serie}', '{book.titulo}', '{book.periodo}', 'A')"));
                 ejecutarconsulta(cadena);
@@ -171,23 +173,53 @@ namespace back_lns_libros.Controllers
         }
 
         [HttpGet("reporte-libros-registrados")]
-        public IActionResult ReporteComercial([FromQuery] string institucion = "", string nivelacademico = "")
+        [HttpGet]
+        public IActionResult ReporteComercial([FromQuery] string institucion = "", [FromQuery] string nivelacademico = "", [FromQuery] string parameterSearch = "")
         {
-            string query = !string.IsNullOrEmpty(institucion)
-                            ? $"where rp.id_institucion = '{institucion}'"
-                            : "";
-            query += !string.IsNullOrEmpty(nivelacademico)
-                            ? $" {(string.IsNullOrEmpty(institucion) ? "where " : "OR")} rp.id_academico = '{nivelacademico}'"
-                            : "";
-            PgConn conn = new PgConn();
-            conn.cadenaConnect = Configuration["Conn_LNS"];
-            string consulta = $@"select * FROM librolns.v_rpt_comercial rp   {query} ;";
+            List<string> condiciones = new List<string>();
+
+            if (!string.IsNullOrWhiteSpace(institucion))
+            {
+                condiciones.Add($"rp.id_institucion = '{institucion}'");
+            }
+            if (!string.IsNullOrWhiteSpace(nivelacademico))
+            {
+                condiciones.Add($"rp.id_academico = '{nivelacademico}'");
+            }
+            if (!string.IsNullOrWhiteSpace(parameterSearch))
+            {
+                condiciones.Add($"(rp.estudiante ILIKE '%{parameterSearch}%' OR rp.serie ILIKE '%{parameterSearch}%' OR rp.cedula ILIKE '%{parameterSearch}%')");
+            }
+            string whereClause = condiciones.Count > 0 ? $"WHERE {string.Join(" OR ", condiciones)}" : "";
+
+            string consulta = $@"SELECT * 
+                                FROM librolns.v_rpt_comercial rp 
+                                {whereClause};";
+
+            PgConn conn = new PgConn
+            {
+                cadenaConnect = Configuration["Conn_LNS"]
+            };
+
             DataTable dataTable = conn.ejecutarconsulta_dt(consulta, 800);
-            string JSONString = Newtonsoft.Json.JsonConvert.SerializeObject(dataTable);
-            return Ok(JSONString);
+            string jsonResult = Newtonsoft.Json.JsonConvert.SerializeObject(dataTable);
+            return Ok(jsonResult);
         }
 
-        [HttpPost("save-estudiante-libro")]
+
+
+        [HttpPost("login-user")]
+        public IActionResult GrabarLibroEstudiante([FromBody] UserLogin user)
+        {
+            string cadena = $@"select coduser, username, status from librolns.user where username = '{user.username}' and password ='{user.password}';";
+            DataTable dtResponse = ejecutarconsulta(cadena);
+            string JSONString = Newtonsoft.Json.JsonConvert.SerializeObject(dtResponse);
+            return Ok(JSONString);
+
+        }
+
+
+            [HttpPost("save-estudiante-libro")]
         public IActionResult GrabarLibroEstudiante([FromBody] StudentBookSave nuevolibroestudiante)
         {
             try
@@ -216,7 +248,9 @@ namespace back_lns_libros.Controllers
                                           '{nuevolibroestudiante.periodo}',
                                           '{codigoUnidadEducativa}',
                                            '{nuevolibroestudiante.ciclo}',
-                                          '{nuevolibroestudiante.serie}');";
+                                          '{nuevolibroestudiante.serie}',
+                                          '{nuevolibroestudiante.latitud}',
+                                          '{nuevolibroestudiante.longitud}');";
                 ejecutarconsulta(cadena);
                 return Ok("SE INSERTO EL LIBRO CORRECTAMENTE");
             }
@@ -226,11 +260,11 @@ namespace back_lns_libros.Controllers
             }
         }
 
-        private void ejecutarconsulta (string cadena)
+        private DataTable ejecutarconsulta (string cadena)
         {
             PgConn conn = new PgConn();
             conn.cadenaConnect = Configuration["Conn_LNS"];
-            conn.ejecutarconsulta_dt(cadena);
+            return conn.ejecutarconsulta_dt(cadena);
         }
 
         [HttpGet("lista-nivel-lectivo")]
