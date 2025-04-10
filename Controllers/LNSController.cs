@@ -173,7 +173,6 @@ namespace back_lns_libros.Controllers
         }
 
         [HttpGet("reporte-libros-registrados")]
-        [HttpGet]
         public IActionResult ReporteComercial([FromQuery] string institucion = "", [FromQuery] string nivelacademico = "", [FromQuery] string parameterSearch = "")
         {
             List<string> condiciones = new List<string>();
