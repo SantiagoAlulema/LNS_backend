@@ -3,6 +3,7 @@ using back_lns_libros.Helpers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Npgsql;
+using OfficeOpenXml;
 using System.Data;
 
 namespace back_lns_libros.Controllers
@@ -40,7 +41,7 @@ namespace back_lns_libros.Controllers
                                limit 20;";
             DataTable dataTable = conn.ejecutarconsulta_dt(cadena);
             RespuestaSW res = new();
-            if (dataTable.Rows.Count > 0 )
+            if (dataTable.Rows.Count > 0)
             {
                 if (dataTable.Rows[0]["codigoestudiante"] == "")
                 {
@@ -62,7 +63,7 @@ namespace back_lns_libros.Controllers
                     return Ok(res);
                 }
             }
-        
+
             res.estado = 200;
             res.mensaje = "LIBRO NO ESTA DISPONIBLE";
             JSONString = Newtonsoft.Json.JsonConvert.SerializeObject(res);
@@ -153,22 +154,102 @@ namespace back_lns_libros.Controllers
             return Ok(res);
         }
 
+
         [HttpPost("upload-book-news")]
-        public IActionResult ExecuteBulkInsert(List<BookData> books)
+        public IActionResult UploadBookNews(List<BookData> books)
         {
             try
             {
-                //String cadena = "UPDATE librolns.product SET estado = 'I'";
-                //ejecutarconsulta(cadena);
-                String cadena = "INSERT INTO librolns.product VALUES ";
-                cadena += string.Join(", ", books.Select(book =>
-                                     $"('{Guid.NewGuid().ToString()}', '{book.sku}', '{book.serie}', '{book.titulo}', '{book.periodo}', 'A')"));
-                ejecutarconsulta(cadena);
-                return Ok("SE INSERTO CORRECTAMENTE");
+                // 1. Crear tabla de repetidos si no existe
+                ejecutarconsulta(@"
+            CREATE TABLE IF NOT EXISTS librolns.temp_books (
+                sku TEXT,
+                serie TEXT,
+                titulo TEXT,
+                periodo TEXT,
+                fecha_registro TIMESTAMP DEFAULT NOW()
+            );");
+
+                // 2. Crear tabla temporal de sesión (no puede ser TEMP porque cambia de conexión)
+                ejecutarconsulta(@"
+            CREATE TABLE IF NOT EXISTS librolns.temp_books_session (
+                sku TEXT,
+                serie TEXT,
+                titulo TEXT,
+                periodo TEXT,
+                fecha_registro TIMESTAMP DEFAULT NOW()
+            );");
+
+                // 3. Limpiar tabla de sesión antes de usarla
+                ejecutarconsulta("DELETE FROM librolns.temp_books_session;");
+
+                // 4. Insertar los datos del request en la tabla temporal
+                if (books.Any())
+                {
+                    var insertTemp = "INSERT INTO librolns.temp_books_session (sku, serie, titulo, periodo, fecha_registro) VALUES " +
+                        string.Join(", ", books.Select(b =>
+                            $"('{b.sku.Replace("'", "''")}', '{b.serie.Replace("'", "''")}', '{b.titulo.Replace("'", "''")}', '{b.periodo.Replace("'", "''")}', NOW())"));
+                    ejecutarconsulta(insertTemp);
+
+                    // 5. Insertar los duplicados en temp_books (los que YA existen en product)
+                    var insertDuplicates = @"
+                INSERT INTO librolns.temp_books (sku, serie, titulo, periodo, fecha_registro)
+                SELECT t.sku, t.serie, t.titulo, t.periodo, NOW()
+                FROM librolns.temp_books_session t
+                WHERE EXISTS (
+                    SELECT 1 FROM librolns.product p WHERE p.serie = t.serie
+                );";
+                    ejecutarconsulta(insertDuplicates);
+
+                    // 6. Insertar los libros únicos en product
+                    var insertUnique = @"
+                INSERT INTO librolns.product (id, sku, serie, titulo, periodo, estado)
+                SELECT gen_random_uuid(), t.sku, t.serie, t.titulo, t.periodo, 'A'
+                FROM librolns.temp_books_session t
+                WHERE NOT EXISTS (
+                    SELECT 1 FROM librolns.product p WHERE p.serie = t.serie
+                );";
+                    ejecutarconsulta(insertUnique);
+                }
+
+                return Ok("Insertados correctamente. Duplicados almacenados en librolns.temp_books.");
             }
             catch (Exception ex)
             {
-                return BadRequest($"ERROR: {ex.Message}");
+                return BadRequest($"Error: {ex.Message}");
+            }
+        }
+
+
+
+        [HttpGet("download-duplicates")]
+        public IActionResult DownloadDuplicates()
+        {
+            try
+            {
+                var query = @"
+            SELECT t.* 
+            FROM librolns.temp_books t
+            WHERE t.fecha_registro >= NOW() - INTERVAL '1 hour'";
+
+                var duplicates = ejecutarconsulta(query);
+
+                if (duplicates.Rows.Count == 0)
+                    return Ok("No se encontraron duplicados en la última hora.");
+                ExcelPackage.License.SetNonCommercialOrganization("My Noncommercial organization");
+                using (var package = new ExcelPackage())
+                {
+
+                    var worksheet = package.Workbook.Worksheets.Add("Duplicados");
+                    worksheet.Cells["A1"].LoadFromDataTable(duplicates, true);
+                    return File(package.GetAsByteArray(),
+                                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                                "duplicados.xlsx");
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Error al generar el archivo: {ex.Message}");
             }
         }
 
@@ -218,7 +299,7 @@ namespace back_lns_libros.Controllers
         }
 
 
-            [HttpPost("save-estudiante-libro")]
+        [HttpPost("save-estudiante-libro")]
         public IActionResult GrabarLibroEstudiante([FromBody] StudentBookSave nuevolibroestudiante)
         {
             try
@@ -259,11 +340,12 @@ namespace back_lns_libros.Controllers
             }
         }
 
-        private DataTable ejecutarconsulta (string cadena)
+        private DataTable ejecutarconsulta(string cadena)
         {
             PgConn conn = new PgConn();
             conn.cadenaConnect = Configuration["Conn_LNS"];
-            return conn.ejecutarconsulta_dt(cadena);
+            DataTable dtRespuesta = conn.ejecutarconsulta_dt(cadena);
+            return dtRespuesta;
         }
 
         [HttpGet("lista-nivel-lectivo")]
