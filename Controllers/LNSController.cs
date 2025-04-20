@@ -156,69 +156,90 @@ namespace back_lns_libros.Controllers
 
 
         [HttpPost("upload-book-news")]
-        public IActionResult UploadBookNews(List<BookData> books)
+        public IActionResult ExecuteBulkInsert(List<BookData> books)
         {
             try
             {
-                // 1. Crear tabla de repetidos si no existe
-                ejecutarconsulta(@"
-            CREATE TABLE IF NOT EXISTS librolns.temp_books (
-                sku TEXT,
-                serie TEXT,
-                titulo TEXT,
-                periodo TEXT,
-                fecha_registro TIMESTAMP DEFAULT NOW()
-            );");
-
-                // 2. Crear tabla temporal de sesión (no puede ser TEMP porque cambia de conexión)
-                ejecutarconsulta(@"
-            CREATE TABLE IF NOT EXISTS librolns.temp_books_session (
-                sku TEXT,
-                serie TEXT,
-                titulo TEXT,
-                periodo TEXT,
-                fecha_registro TIMESTAMP DEFAULT NOW()
-            );");
-
-                // 3. Limpiar tabla de sesión antes de usarla
-                ejecutarconsulta("DELETE FROM librolns.temp_books_session;");
-
-                // 4. Insertar los datos del request en la tabla temporal
-                if (books.Any())
-                {
-                    var insertTemp = "INSERT INTO librolns.temp_books_session (sku, serie, titulo, periodo, fecha_registro) VALUES " +
-                        string.Join(", ", books.Select(b =>
-                            $"('{b.sku.Replace("'", "''")}', '{b.serie.Replace("'", "''")}', '{b.titulo.Replace("'", "''")}', '{b.periodo.Replace("'", "''")}', NOW())"));
-                    ejecutarconsulta(insertTemp);
-
-                    // 5. Insertar los duplicados en temp_books (los que YA existen en product)
-                    var insertDuplicates = @"
-                INSERT INTO librolns.temp_books (sku, serie, titulo, periodo, fecha_registro)
-                SELECT t.sku, t.serie, t.titulo, t.periodo, NOW()
-                FROM librolns.temp_books_session t
-                WHERE EXISTS (
-                    SELECT 1 FROM librolns.product p WHERE p.serie = t.serie
-                );";
-                    ejecutarconsulta(insertDuplicates);
-
-                    // 6. Insertar los libros únicos en product
-                    var insertUnique = @"
-                INSERT INTO librolns.product (id, sku, serie, titulo, periodo, estado)
-                SELECT gen_random_uuid(), t.sku, t.serie, t.titulo, t.periodo, 'A'
-                FROM librolns.temp_books_session t
-                WHERE NOT EXISTS (
-                    SELECT 1 FROM librolns.product p WHERE p.serie = t.serie
-                );";
-                    ejecutarconsulta(insertUnique);
-                }
-
-                return Ok("Insertados correctamente. Duplicados almacenados en librolns.temp_books.");
+                //String cadena = "UPDATE librolns.product SET estado = 'I'";
+                //ejecutarconsulta(cadena);
+                String cadena = "INSERT INTO librolns.product VALUES ";
+                cadena += string.Join(", ", books.Select(book =>
+                                     $"('{Guid.NewGuid().ToString()}', '{book.sku}', '{book.serie}', '{book.titulo}', '{book.periodo}', 'A')"));
+                ejecutarconsulta(cadena);
+                return Ok("SE INSERTO CORRECTAMENTE");
             }
             catch (Exception ex)
             {
-                return BadRequest($"Error: {ex.Message}");
+                return BadRequest($"ERROR: {ex.Message}");
             }
         }
+
+
+        //[HttpPost("upload-book-news")]
+
+        //public IActionResult UploadBookNews(List<BookData> books)
+        //{
+        //    try
+        //    {
+        //        // 1. Crear tabla de repetidos si no existe
+        //        ejecutarconsulta(@"
+        //    CREATE TABLE IF NOT EXISTS librolns.temp_books (
+        //        sku TEXT,
+        //        serie TEXT,
+        //        titulo TEXT,
+        //        periodo TEXT,
+        //        fecha_registro TIMESTAMP DEFAULT NOW()
+        //    );");
+
+        //        // 2. Crear tabla temporal de sesión (no puede ser TEMP porque cambia de conexión)
+        //        ejecutarconsulta(@"
+        //    CREATE TABLE IF NOT EXISTS librolns.temp_books_session (
+        //        sku TEXT,
+        //        serie TEXT,
+        //        titulo TEXT,
+        //        periodo TEXT,
+        //        fecha_registro TIMESTAMP DEFAULT NOW()
+        //    );");
+
+        //        // 3. Limpiar tabla de sesión antes de usarla
+        //        ejecutarconsulta("DELETE FROM librolns.temp_books_session;");
+
+        //        // 4. Insertar los datos del request en la tabla temporal
+        //        if (books.Any())
+        //        {
+        //            var insertTemp = "INSERT INTO librolns.temp_books_session (sku, serie, titulo, periodo, fecha_registro) VALUES " +
+        //                string.Join(", ", books.Select(b =>
+        //                    $"('{b.sku.Replace("'", "''")}', '{b.serie.Replace("'", "''")}', '{b.titulo.Replace("'", "''")}', '{b.periodo.Replace("'", "''")}', NOW())"));
+        //            ejecutarconsulta(insertTemp);
+
+        //            // 5. Insertar los duplicados en temp_books (los que YA existen en product)
+        //            var insertDuplicates = @"
+        //        INSERT INTO librolns.temp_books (sku, serie, titulo, periodo, fecha_registro)
+        //        SELECT t.sku, t.serie, t.titulo, t.periodo, NOW()
+        //        FROM librolns.temp_books_session t
+        //        WHERE EXISTS (
+        //            SELECT 1 FROM librolns.product p WHERE p.serie = t.serie
+        //        );";
+        //            ejecutarconsulta(insertDuplicates);
+
+        //            // 6. Insertar los libros únicos en product
+        //            var insertUnique = @"
+        //        INSERT INTO librolns.product (id, sku, serie, titulo, periodo, estado)
+        //        SELECT gen_random_uuid(), t.sku, t.serie, t.titulo, t.periodo, 'A'
+        //        FROM librolns.temp_books_session t
+        //        WHERE NOT EXISTS (
+        //            SELECT 1 FROM librolns.product p WHERE p.serie = t.serie
+        //        );";
+        //            ejecutarconsulta(insertUnique);
+        //        }
+
+        //        return Ok("Insertados correctamente. Duplicados almacenados en librolns.temp_books.");
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return BadRequest($"Error: {ex.Message}");
+        //    }
+        //}
 
 
 
