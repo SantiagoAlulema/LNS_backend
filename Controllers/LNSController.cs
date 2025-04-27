@@ -36,7 +36,7 @@ namespace back_lns_libros.Controllers
                                 FROM librolns.product p
                                 LEFT JOIN librolns.estudiantelibro el ON el.codigoproduct = p.id
                                 LEFT JOIN librolns.estudent es ON es.id = el.codigoestudent
-                               where UPPER(p.serie) LIKE UPPER('%{serie}%') and p.estado = 'A' 
+                               where UPPER(p.serie) = UPPER('{serie}') and p.estado = 'A' 
                                AND NOT EXISTS (SELECT 1 FROM librolns.estudiantelibro esl WHERE esl.codigoproduct = p.id )
                                limit 20;";
             DataTable dataTable = conn.ejecutarconsulta_dt(cadena);
