@@ -87,8 +87,8 @@ namespace back_lns_libros.Controllers
         {
             string cadena = $@"SELECT es.id, 
                                       es.nombre, 
-                                      esli.codigoinstitucion  periodo , 
-                                      esli.nivelacademico  ciclo
+                                       COALESCE(esli.codigoinstitucion, '') AS periodo, 
+       COALESCE(esli.nivelacademico, '') AS ciclo
                                FROM librolns.estudent es
                                left join librolns.estudiantelibro esli on esli.codigoestudent =  es.id 
                                left join librolns.education_level el on el.id = esli.nivelacademico
