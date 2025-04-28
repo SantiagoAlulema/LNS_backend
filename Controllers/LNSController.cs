@@ -22,11 +22,23 @@ namespace back_lns_libros.Controllers
         [HttpGet("consultar-libro")]
         public IActionResult VerificarLibro(string serie = "")
         {
-            PgConn conn = new PgConn();
-            conn.cadenaConnect = Configuration["Conn_LNS"];
             string JSONString = String.Empty;
+            RespuestaSW res = new();
+            DataTable dataTable;
+            string cadena = $@"select *
+                                from librolns.estudiantelibro el
+                                where UPPER(el.serielibro) = UPPER('{serie}')";
+            dataTable = ejecutarconsulta(cadena);
+            if (dataTable.Rows.Count > 0)
+            {
+                res.estado = 202;
+                res.mensaje = "EL LIBRO YA SE ENCUENTRA REGISTRADO";
+                JSONString = Newtonsoft.Json.JsonConvert.SerializeObject(res);
+                return Ok(res);
+            }
+         
 
-            string cadena = $@"SELECT p.id codigoproducto, 
+            cadena = $@"SELECT p.id codigoproducto, 
                                        p.sku, 
                                        p.serie, 
                                        p.titulo, 
@@ -39,8 +51,7 @@ namespace back_lns_libros.Controllers
                                where UPPER(p.serie) = UPPER('{serie}') and p.estado = 'A' 
                                AND NOT EXISTS (SELECT 1 FROM librolns.estudiantelibro esl WHERE esl.codigoproduct = p.id )
                                limit 20;";
-            DataTable dataTable = conn.ejecutarconsulta_dt(cadena);
-            RespuestaSW res = new();
+            dataTable = ejecutarconsulta(cadena);
             if (dataTable.Rows.Count > 0)
             {
                 if (dataTable.Rows[0]["codigoestudiante"] == "")
